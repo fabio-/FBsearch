@@ -1,0 +1,92 @@
+input[type=text] {
+position:relative;
+top:-1px;
+width: 300px;
+height:33px;
+padding: 5px;
+padding-right: 40px;
+outline: none;
+border: 2px solid #999999;
+border-radius: 5px 0px 0px 5px;
+background-color: #FBFBFB;
+font-family: Cambria, Cochin, Georgia, serif;
+font-size: 16px;
+background-position: 265px -10px;
+background-image:url(magnifiers_two.png);
+background-repeat: no-repeat;
+}      
+
+input[type=text]:focus {
+background-color: #FBFBFB;
+border-color: #333333;
+box-shadow: 0px 0px 10px -2px #333;
+}     
+
+#content{
+	font-family: Cambria, Cochin, Georgia, serif;
+	font-size: 16px;
+	width: 600px;
+	position: relative;
+	margin-left: auto;
+	margin-right: auto;
+	height: 600px;
+	position: relative;
+	top: 100px;
+	
+}
+
+div{
+	border:1px solid black;*/
+	}
+
+#wrapper{
+	border: 1px solid grey;
+	border-radius: 10px;
+	background-color: white;
+	position: relative;
+	width: 800px;
+	height: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+	box-shadow: 2px 2px 2px 2px #666;
+	grid-rows:inherit;
+}
+
+#searchBar{
+	width:440px;
+	position:relative;
+	margin-left:180px;
+	top:30px;
+}
+
+.multiborder{
+        border:1px solid black;
+        width:600px;
+        height:100px;
+        position: 150px;
+		alignment-adjust:alphabetic;
+}
+
+.innerborder{
+        border:1px dotted #CCCC00;
+        width:150px;
+        height:100px;
+        position:relative;
+		alignment-adjust:text-after-edge;
+}
+
+.go{
+	font-family: Cambria, Cochin, Georgia, serif;
+	margin-left:-10px;
+	margin-top:3px;
+	border-radius:0px 5px 5px 0px;
+    height: 33px;
+    width: 72px;
+    font-size: 21px;
+    color: #fff;
+    text-align: center;
+    line-height: 0px;
+    border-width: 0;
+    background-color:#999;
+    cursor: pointer;
+}

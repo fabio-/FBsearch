@@ -1,0 +1,78 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div id="wrapper">
+		
+   	<div id="searchBar">
+    		<input type="text" name="q" id="q"/>
+            <input type="submit" class="go"​ value="Search"/>
+        </div>
+        
+		<div id="content"> </div>
+​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​</div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+$('.go').click(function() {
+	
+	//removes previous searches!
+	$('#content').empty();
+
+    $('.go').val("Loading...");
+	$('#content').append('Results:<br><br>');
+	 
+	 //request valid access token
+	 var requestURL = 'https://graph.facebook.com/oauth/access_token?%20client_id=136237449885255&client_secret=9f9191c07c175024dbc495c7914625c0&%20grant_type=client_credentials';
+		
+	//alert('ciao');
+	
+	var accessToken = $.ajax({
+  	url: requestURL,
+  	global: false,
+  	type: "POST",
+  	data: "name=value",
+  	dataType: "html",
+  	async:false,
+  	success: function(msg){ }
+	} ).responseText;
+
+
+	//query the Facebook graph search with input parameters and valid access token
+    var url = 'https://graph.facebook.com/search?q='+ $('#q').val()+'&type=event&'+accessToken;
+	
+	
+    $.getJSON(url, function(data) {
+            obj = data.data;
+            Object.keys(obj).forEach(function(key){
+					
+                $('#content').append('<div class="multiborder">'
+				                        +'<img align="right" src="https://graph.facebook.com/'+obj[key].id+'/picture?type=large" width="107" height="98" >'+
+										'<b>    '+obj[key].name+'</b>'+'<br>'+
+										//'<div class="innerborder" align:right'+
+										
+										//'</div>'+
+										'<br><img align=top src="location.png">'+"&#09"+obj[key].location+
+										'<br>'+
+										obj[key].timezone+
+										'<br><a href=https://www.facebook.com/events/'+obj[key].id+'>event</a>'
+										
+										
+										+'</div>') ;
+										$('#content').append('<br><br>');
+										 });
+		
+	$('#content').append('<br><br>');
+	$('.go').val("Search");
+    });
+
+});
+
+
+</script>
+</body>
+</html>
