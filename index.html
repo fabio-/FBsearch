@@ -5,33 +5,26 @@
 </head>
 <body>
 
-	<div id="header"><img src="FacebookSearch.png"></div>
-
-	<h1>To Search for events in your city enter your location in the searach bar!</h1>
-		
-   	<div id="searchBar">
+	<div style="background-color:#3b5998; width:100%;height:100px;">
+    	<div id="header"><img id="logo" src="FacebookSearch.png"></div>
+    </div>
+    
+    <div id="mainArea">
+    	<h1>To Search for events in your city enter your location in the searach bar!</h1>
+	
+   		<div id="searchBar">
     		<input type="text" name="q" id="q"/>
-            <input type="submit" class="go"​ value="Press"/>
+           	<input type="submit" class="go"​ value="Press"/>
         </div>
-        
-		<div id="content"> </div>
+   	 </div>
+    
+    <div id="wrapper">
+   		<div id="content"> </div>
+    </div>
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 
 <script type="text/javascript">
-
-//Set button's color and shadow when clicking searchbar
-$('#q').focus(function() {
-  $('.go').css('background-color','rgb(28, 50, 102)');
-  $('.go').css('box-shadow','0px 0px 10px -2px #333');
-});
-
-//Set button's color and shadow to original color when search bar is not focused
-$('#q').focusout(function() {
-  $('.go').css('background-color','#4c66a4');
-  $('.go').css('box-shadow','0px 0px 0px 0px #333');
-});
-
 
 $('.go').click(function() {
 	
