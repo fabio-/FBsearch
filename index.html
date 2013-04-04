@@ -60,16 +60,22 @@ $('.go').click(function() {
 				//TODO: REMOVE EVENTS WITH THE SAME NAME ID
 				//		"NEXT" PAGES TO PUT EVENTS THAT DON'T FIT IN FIRST PAGE!
 				
-					var out = '<div class="multiborder">'+
-										'<img align="right" src="https://graph.facebook.com/'+obj[key].id+'/picture?type=large" width="107" height="98" >'+
-										'<b>'+obj[key].name+'</b>'+'<br>'+
+			//	'<img align="right" src="https://graph.facebook.com/'+obj[key].id+'/picture?type=large" width="107" height="98" >'+
+				//						'<b>'+obj[key].name+'</b>'+'<br>'+
 										//'<div class="innerborder" align:right'+
 										
 										//'</div>'+
-										'<br><img align=top src="location.png">'+"&#09"+obj[key].location+
-										'<br>'+
-										obj[key].timezone+
-										'<br><a href=https://www.facebook.com/events/'+obj[key].id+'>event</a>';
+					//					'<br><img align=top src="location.png">'+"&#09"+obj[key].location+
+						//				'<br>'+
+							//			obj[key].timezone+
+								//		'<br><a href=https://www.facebook.com/events/'+obj[key].id+'>event</a>';
+				
+					var out = '<div class="multiborder">'+
+								'<div id="proPic"><img align=middle src="https://graph.facebook.com/'+obj[key].id+'/picture?type=large" width="107" height="98"> </div>'+
+								'<div id="event" >'+'<b>'+obj[key].name+'</b>'+'</div>'+
+								'<div id="sideTxt"><img align=middle src="location.png">&nbsp &nbsp &nbsp'+obj[key].timezone+'</div>';
+							
+										
 										
                 $('#content').append(out);
 										

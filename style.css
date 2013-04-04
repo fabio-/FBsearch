@@ -87,9 +87,9 @@ div{
 }
 
 .multiborder{
-        border:1px solid black;
+        border-top:1px solid black;
         width:600px;
-        height:100px;
+        height:120px;
         position: 150px;
 		alignment-adjust:alphabetic;
 }
@@ -115,4 +115,32 @@ div{
     border-width: 0;
     background-color:#4c66a4;
     cursor: pointer;
+}
+#proPic {
+    background:white;
+    width: 120px;
+    height:110px;
+    border-right:1px solid #888;
+    margin-right:20px;
+    float: left;
+}     
+
+#event {
+    background:white;
+	border-bottom:1px solid #AAA;
+    margin-top:5px;
+    width: 450px;
+    height:30px;
+    float:left;
+}
+
+#sideTxt {
+    background:white;
+	border-bottom:1px solid #AAA;
+    font-size:12px;
+	alignment-baseline:middle;
+    margin-top:5px;
+    width: 450px;
+    height:30px;
+    float:left;
 }
