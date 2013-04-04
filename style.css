@@ -1,3 +1,23 @@
+body{
+background-color:#E7EBF2;
+margin:0px;
+}
+
+h1{
+	font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	font-size:20px;
+	color:#0e385f;
+	margin-left:100px;
+	margin-right:100px;
+}
+
+#header{
+	background-color:#3b5998;
+	width:100%;
+	height:100px;
+	border-radius:10px;
+}
+
 input[type=text] {
 position:relative;
 top:-1px;
@@ -6,19 +26,18 @@ height:33px;
 padding: 5px;
 padding-right: 40px;
 outline: none;
-border: 2px solid #999999;
+border: 2px solid #4c66a4;
 border-radius: 5px 0px 0px 5px;
 background-color: #FBFBFB;
 font-family: Cambria, Cochin, Georgia, serif;
 font-size: 16px;
-background-position: 265px -10px;
-background-image:url(magnifiers_two.png);
+background-image:url(facebook.ico);
 background-repeat: no-repeat;
 }      
 
 input[type=text]:focus {
 background-color: #FBFBFB;
-border-color: #333333;
+border-color: rgb(28, 50, 102);
 box-shadow: 0px 0px 10px -2px #333;
 }     
 
@@ -29,33 +48,21 @@ box-shadow: 0px 0px 10px -2px #333;
 	position: relative;
 	margin-left: auto;
 	margin-right: auto;
-	height: 600px;
+	height: 840px;
 	position: relative;
-	top: 100px;
+	top:50px;
 	
 }
 
 div{
-	border:1px solid black;*/
+	/*border:1px solid black;*/
 	}
 
-#wrapper{
-	border: 1px solid grey;
-	border-radius: 10px;
-	background-color: white;
-	position: relative;
-	width: 800px;
-	height: 1000px;
-	margin-left: auto;
-	margin-right: auto;
-	box-shadow: 2px 2px 2px 2px #666;
-	grid-rows:inherit;
-}
-
 #searchBar{
-	width:440px;
+	width:600px;
 	position:relative;
-	margin-left:180px;
+	margin-left:auto;
+	margin-right:auto;
 	top:30px;
 }
 
@@ -81,12 +88,12 @@ div{
 	margin-top:3px;
 	border-radius:0px 5px 5px 0px;
     height: 33px;
-    width: 72px;
+    width: 90px;
     font-size: 21px;
     color: #fff;
     text-align: center;
     line-height: 0px;
     border-width: 0;
-    background-color:#999;
+    background-color:#4c66a4;
     cursor: pointer;
 }
