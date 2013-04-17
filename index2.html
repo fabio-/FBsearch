@@ -1,0 +1,216 @@
+<em><em><em><em><em><em><em><em><em><em><em><em><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+
+	<div style="background-color:#3b5998; width:100%;height:100px;">
+    	<div id="header"><img id="logo" src="FacebookSearch.png"></div>
+    </div>
+    
+    <div id="mainArea">
+    	<h1>To Search for events in your city enter your location in the searach bar!</h1>
+	
+   		<div id="searchBar">
+    		<input type="text" name="q" id="q"/>
+           	<input type="submit" class="go"​ value="Press"/>
+        </div>
+   	 </div>
+    
+    <div id="wrapper">
+   		<div id="content"> </div>
+    </div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+
+$('.go').click(function() {
+	
+	//removes previous searches!
+	$('#content').empty();
+
+    $('.go').val("Loading...");
+	
+	 
+	 //request valid access token
+	 var requestURL = 'https://graph.facebook.com/oauth/access_token?%20client_id=136237449885255&client_secret=9f9191c07c175024dbc495c7914625c0&%20grant_type=client_credentials';
+	
+	var accessToken = $.ajax({
+  	url: requestURL,
+  	global: false,
+  	type: "POST",
+  	data: "name=value",
+  	dataType: "html",
+  	async:false,
+  	success: function(msg){ }
+	} ).responseText;
+
+
+	//query the Facebook graph search with input parameters and valid access token
+    var url = 'https://graph.facebook.com/search?q='+ $('#q').val()+'&type=event&'+accessToken;
+	var eventsWithCount= new Array();
+    $.getJSON(url, function(data) {
+		
+            obj = data.data;
+            Object.keys(obj).forEach(function(key){
+				var string = obj[key].id+"^"+obj[key].name+"^"+obj[key].location+"^"+obj[key].timezone;
+			var a = obj[key].id;
+			eventsWithCount.push(string);
+			test(a,obj[key].name,obj[key].timezone,string);
+				//Jquery used to append all the events retrieved
+				//TODO: REMOVE EVENTS WITH THE SAME NAME ID
+				//		"NEXT" PAGES TO PUT EVENTS THAT DON'T FIT IN FIRST PAGE!
+				
+			//	'<img align="right" src="https://graph.facebook.com/'+obj[key].id+'/picture?type=large" width="107" height="98" >'+
+				//						'<b>'+obj[key].name+'</b>'+'<br>'+
+										//'<div class="innerborder" align:right'+
+										
+										//'</div>'+
+					//					'<br><img align=top src="location.png">'+"&#09"+obj[key].location+
+						//				'<br>'+
+							//			obj[key].timezone+
+								//		'<br><a href=https://www.facebook.com/events/'+obj[key].id+'>event</a>';
+								/*
+				id = obj[key];
+				
+				if(obj[key].timezone != undefined){	
+				
+				var likes = 'https://graph.facebook.com/'+obj[key].id+'/likes?'+accessToken;
+				//alert(likes);
+				console.log(likes);
+				var testCount = 0;
+				$.getJSON(likes, function(asd) {
+    				 as = asd.data;
+            	Object.keys(as).forEach(function(key){
+					console.log(obj[key].name);
+					testCount = testCount +1;
+					});
+					console.log(testCount);
+						alert('ok');
+					});	
+					var out = '<div class="multiborder">'+
+								'<div id="proPic"><img align=middle src="https://graph.facebook.com/'+obj[key].id+'/picture?type=large" width="107" height="98"> </div>'+
+								'<div id="event" >'+'<b>'+obj[key].name+'</b>'+'</div>'+
+								'<div id="sideTxt" >'+'<b>'+obj[key].id+'</b>'+'</div>'+
+								'<div id="sideTxt" >'+'<b> likes :'+testCount+'</b>'+'</div>'+
+								'<div id="sideTxt"><img align=middle src="location.png">&nbsp &nbsp &nbsp'+obj[key].timezone+'</div>';
+							
+													
+                
+				}
+				$('#content').append(out);
+										
+								$('#content').append('<br><br>');
+					*/					
+			});
+			
+			//for(var i = 0; i<allJson.length;i ++){
+			//	var likes = 'https://graph.facebook.com/'+allJson[i].id+'/likes&'+accessToken;
+			/*
+			console.log(accessToken);
+				var likes = 'https://graph.facebook.com/312759898853062/likes?'+accessToken;
+				//alert(likes);
+				console.log(likes);
+				var count = 0;
+				$.getJSON(likes, function(data) {
+    				 obj = data.data;
+            	Object.keys(obj).forEach(function(key){
+					console.log(obj[key].name);
+					count = count +1;
+					});
+					console.log(count);
+				});*/
+				//}
+		//	show(jsonData);
+		printAll();
+	$('#content').append('<br><br>');
+	$('.go').val("Search");
+	
+    });
+	
+	function test(id,name,location,string)
+	{
+	
+		var likes = 'https://graph.facebook.com/'+id+'/likes?'+accessToken;
+		var testCount = 0;
+			$.getJSON(likes, function(asd) {
+    			 as = asd.data;
+        	   	Object.keys(as).forEach(function(key){
+					//console.log(obj[key].name);
+					testCount = testCount +1;
+				});
+				//console.log(testCount);
+				test2(id,name,location,testCount,string);
+			});	
+			
+			
+	}
+
+
+	function test2(id,name,timezone,count,string){
+		//console.log("*******************");
+		//console.log(count);
+	//	eventsWithCount.push(string+"^"+count);
+			var out = '<div class="multiborder">'+
+								'<div id="proPic"><img align=middle src="https://graph.facebook.com/'+id+'/picture?type=large" width="107" height="98"> </div>'+
+								'<div id="event" >'+'<b>'+name+'</b>'+'</div>'+
+								//'<div id="sideTxt" >'+'<b>'+obj[key].id+'</b>'+'</div>'+
+								'<div id="sideTxt" >'+'<b> likes :'+count+'</b>'+'</div>'+
+							'<div id="sideTxt"><img align=middle src="location.png">&nbsp &nbsp &nbsp'+timezone+'</div>';
+							
+													
+                
+				
+				$('#content').append(out);
+				$('#content').append('<br><br>');
+		
+	}
+	
+	function show(string){
+		
+		for(var i =0;i<string.length;i++){
+			var splited = string[i].split("^");
+			var as =  splited[0];
+			
+			
+			var likes = 'https://graph.facebook.com/'+as+'/likes?'+accessToken;
+		var testCount = -1;
+			$.getJSON(likes, function(asd) {
+    			 as = asd.data;
+        	   	Object.keys(as).forEach(function(key){
+					console.log(obj[key].name);
+					testCount = testCount +1;
+				});
+				console.log(testCount);
+				console.log(string[i]+" _____________ likes : "+testCount);
+				//test2(id,name,location,testCount);
+			});
+			
+			
+			
+			}
+		
+		}
+	function printAll(){
+		
+		if(eventsWithCount != null){
+			alert("if loop"+eventsWithCount.length);
+			for(var i = 0;i<eventsWithCount.length;i++){
+				console.log(eventsWithCount[i]);
+				}
+			
+			}else{
+				alert("No data");
+				}
+		
+		}
+	
+});
+
+
+</script>
+</body>
+</html></em></em></em></em></em></em></em></em></em></em></em></em>
