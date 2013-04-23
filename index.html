@@ -96,13 +96,13 @@ $('.go').click(function() {
 	//Create the HTML to display every single event
 	function addResults(jsonEvents){
 		
-		console.log(jsonEvents[0].date);
+		var events = 10;
 		
 		if(jsonEvents.length <10){
-			key=jsonEvents.length;
+			events=jsonEvents.length;
 		}
 		
-		for(var key=0 ; key<10 ; key++){
+		for(var key=0 ; key<events ; key++){
 			var name = jsonEvents[key].name;
 			var date = jsonEvents[key].start_date;
 			
