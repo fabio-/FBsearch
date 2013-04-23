@@ -27,6 +27,13 @@
 
 <script type="text/javascript">
 
+//Handle the "enter" event to trigger button click
+$("#q").keyup(function(event){
+    if(event.keyCode == 13){
+        $('.go').click();
+    }
+});
+
 $('.go').click(function() {
 	
 	//set number of results(events) in the json object 
