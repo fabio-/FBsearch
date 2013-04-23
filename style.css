@@ -7,7 +7,7 @@ margin:0px;
 #mainArea{
 	background-color:#E7EBF2;
 	width:800px;
-	height:200px;
+	height:150px;
 	position:relative;
 	margin-left:auto;
 	margin-right:auto;
@@ -47,8 +47,7 @@ h1{
 }
 
 input[type=text] {
-top:-1px;
-position:relative;
+vertical-align:top;
 width: 300px;
 height:33px;
 padding: 5px;
@@ -58,7 +57,6 @@ border: 1px solid #bdc7d8;
 border-radius: 5px 0px 0px 5px;
 background-color: #FBFBFB;
 font-size: 16px;
-background-image:url(facebook.ico);
 background-repeat: no-repeat;
 }      
    
@@ -69,10 +67,7 @@ background-repeat: no-repeat;
 	position: relative;
 	margin-left: auto;
 	margin-right: auto;
-	height: 840px;
-	position: relative;
-	top:50px;
-	
+	height: 2000px;
 }
 
 div{
@@ -80,6 +75,7 @@ div{
 	}
 
 #searchBar{
+	margin:0px;
 	width:600px;
 	position:relative;
 	margin-left:60px;
@@ -87,11 +83,15 @@ div{
 }
 
 .multiborder{
-        border-top:1px solid black;
+        border:1px solid #aaa;
+		border-radius:5px;
+		box-shadow:1px 1px 1px #aaa;
+		overflow:hidden;
         width:600px;
-        height:120px;
+        height:150px;
         position: 150px;
 		alignment-adjust:alphabetic;
+		background-color:rgb(250, 250, 250);
 }
 
 .innerborder{
@@ -103,44 +103,113 @@ div{
 }
 
 .go{
-	margin-left:10px;
-	margin-top:3px;
-	border-radius:0px 5px 5px 0px;
+	vertical-align:middle;
+	position:relative;
+	margin-left:-6px;
     height: 33px;
-    width: 90px;
-    font-size: 21px;
+    width: 80px;
+    font-size: 18px;
     color: #fff;
     text-align: center;
     line-height: 0px;
-    border-width: 0;
-    background-color:#4c66a4;
-    cursor: pointer;
+	font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	font-weight:bold;
+	cursor: pointer;
+border:1px solid #bdc7d8; border-radius: 0px 5px 5px 0px; text-shadow: -1px -1px 0 rgba(0,0,0,0.1);text-align: center; color: #FFFFFF; background-color: #3093c7;
+ background-image: -webkit-gradient(linear, left top, left bottom, from(#3093c7), to(#1c5a85));
+ background-image: -webkit-linear-gradient(top, #A8BBDB, #3b5998);
+ background-image: -moz-linear-gradient(top, #A8BBDB, #3b5998);
+ background-image: -ms-linear-gradient(top, #A8BBDB, #3b5998);
+ background-image: -o-linear-gradient(top, #A8BBDB, #3b5998);
+ background-image: linear-gradient(to bottom, #A8BBDB, #3b5998);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#3093c7, endColorstr=#1c5a85);
 }
+
+.go:hover{
+	vertical-align:middle;
+	position:relative;
+	margin-left:-6px;
+    height: 33px;
+    width: 80px;
+    font-size: 18px;
+    color: #fff;
+    text-align: center;
+    line-height: 0px;
+    cursor: pointer;
+	font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	font-weight:bold;
+ border:1px solid #bdc7d8; border-radius: 0px 5px 5px 0px; text-shadow: -1px -1px 0 rgba(0,0,0,0.1);text-align: center; color: #FFFFFF; background-color: #3093c7;
+ background-image: -webkit-gradient(linear, left top, left bottom, from(#26759e), top(#133d5b));
+ background-image: -webkit-linear-gradient(top, #7E9ED5, #143374);
+ background-image: -moz-linear-gradient(top, #7E9ED5, #143374);
+ background-image: -ms-linear-gradient(top, #7E9ED5, #143374);
+ background-image: -o-linear-gradient(top, #7E9ED5, #143374);
+ background-image: linear-gradient(to bottom, #7E9ED5, #143374);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#26759e, endColorstr=#133d5b);
+}
+
 #proPic {
+	position:relative;
+	top:20px;
+	left:15px;
+	border:1px solid #aaa;
+	border-radius:5px;
+	overflow:hidden;
     background:white;
     width: 120px;
     height:110px;
-    border-right:1px solid #888;
-    margin-right:20px;
     float: left;
 }     
 
-#event {
-    background:white;
+#loadImage{
+position:relative;
+right:-130px;
+top:-40px;
+}
+
+#event1{
+
 	border-bottom:1px solid #AAA;
     margin-top:5px;
     width: 450px;
-    height:30px;
-    float:left;
+    height:40px;
+    float:right;
+}
+#event2{
+
+	border-bottom:1px solid #AAA;
+    margin-top:5px;
+    width: 450px;
+    height:50px;
+    float:right;
+}
+#event3{
+
+	border-bottom:1px solid #AAA;
+    margin-top:5px;
+    width: 450px;
+    height:70px;
+    float:right;
 }
 
 #sideTxt {
-    background:white;
 	border-bottom:1px solid #AAA;
     font-size:12px;
 	alignment-baseline:middle;
     margin-top:5px;
     width: 450px;
     height:30px;
-    float:left;
+    float:right;
+}
+#info {
+	border-bottom:1px solid #AAA;
+    font-size:12px;
+	alignment-baseline:middle;
+    margin-top:5px;
+    width: 225px;
+    height:30px;
+    float:right;
+}
+.icon{
+	position:relative;
+	top:5px;
+	margin-right:2px;
 }

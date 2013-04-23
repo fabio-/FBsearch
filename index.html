@@ -16,7 +16,12 @@
     		<input type="text" name="q" id="q"/>
            	<input type="submit" class="go"​ value="Press"/>
         </div>
+        
+        
+        
+        <div id="loading"></div>
    	 </div>
+     <img  align="middle">
     
     <div id="wrapper">
    		<div id="content"> </div>
@@ -28,66 +33,169 @@
 
 $('.go').click(function() {
 	
+	//set number of results(events) in the json object 
+	var limit = 5000;
+	
 	//removes previous searches!
 	$('#content').empty();
-
-    $('.go').val("Loading...");
-	
-	 
-	 //request valid access token
-	 var requestURL = 'https://graph.facebook.com/oauth/access_token?%20client_id=136237449885255&client_secret=9f9191c07c175024dbc495c7914625c0&%20grant_type=client_credentials';
-	
-	var accessToken = $.ajax({
-  	url: requestURL,
-  	global: false,
-  	type: "POST",
-  	data: "name=value",
-  	dataType: "html",
-  	async:false,
-  	success: function(msg){ }
-	} ).responseText;
-
+	$('#loading').append( '<p>Loading Results:</p><img src="loading.gif" id="loadImage">');
+	var accessToken = getAccessToken();
 
 	//query the Facebook graph search with input parameters and valid access token
-    var url = 'https://graph.facebook.com/search?q='+ $('#q').val()+'&type=event&'+accessToken;
+    var url = 'https://graph.facebook.com/search?q='+ $('#q').val()+'&type=event&limit='+limit+'&'+accessToken;
+
+	var jsonEvents = getJson(url);
 	
+	console.log(url);
+
+	buildRanking(jsonEvents);
 	
-    $.getJSON(url, function(data) {
-            obj = data.data;
-            Object.keys(obj).forEach(function(key){
-			
-				//Jquery used to append all the events retrieved
-				//TODO: REMOVE EVENTS WITH THE SAME NAME ID
-				//		"NEXT" PAGES TO PUT EVENTS THAT DON'T FIT IN FIRST PAGE!
-				
-			//	'<img align="right" src="https://graph.facebook.com/'+obj[key].id+'/picture?type=large" width="107" height="98" >'+
-				//						'<b>'+obj[key].name+'</b>'+'<br>'+
-										//'<div class="innerborder" align:right'+
-										
-										//'</div>'+
-					//					'<br><img align=top src="location.png">'+"&#09"+obj[key].location+
-						//				'<br>'+
-							//			obj[key].timezone+
-								//		'<br><a href=https://www.facebook.com/events/'+obj[key].id+'>event</a>';
-				
-					var out = '<div class="multiborder">'+
-								'<div id="proPic"><img align=middle src="https://graph.facebook.com/'+obj[key].id+'/picture?type=large" width="107" height="98"> </div>'+
-								'<div id="event" >'+'<b>'+obj[key].name+'</b>'+'</div>'+
-								'<div id="sideTxt"><img align=middle src="location.png">&nbsp &nbsp &nbsp'+obj[key].timezone+'</div>';
-							
-										
-										
-                $('#content').append(out);
-										
-										$('#content').append('<br><br>');
-										
-			});
-										 
-										 
-		
+						
 	$('#content').append('<br><br>');
 	$('.go').val("Search");
-    });
+	
+	
+	function getAccessToken(){
+		var requestURL = 'https://graph.facebook.com/oauth/access_token?%20client_id=136237449885255&client_secret=9f9191c07c175024dbc495c7914625c0&%20grant_type=client_credentials';
+	
+		var accessToken = $.ajax({
+  		url: requestURL,
+  		global: false,
+  		type: "POST",
+  		data: "name=value",
+  		dataType: "html",
+  		async:false,
+  		success: function(msg){ }
+		} ).responseText;
+		
+		return accessToken;
+	}
+	
+	//retrieves and stores events in a json object
+	function getJson(url){
+		var jsonEvents = {};
+    	$.ajax({
+    		url: url,
+    		async: false,
+    		dataType: 'json',
+    		success: function(data) {
+    				jsonEvents = data.data;
+    		}
+    	});
+		return jsonEvents;
+	}
+	
+	
+	//Create the HTML to display every single event
+	function addResults(jsonEvents){
+		
+		console.log(jsonEvents[0].date);
+		
+		for(var key=0 ; key<10 ; key++){
+			var name = jsonEvents[key].name;
+			var date = jsonEvents[key].start_date;
+			
+			if(name.length>45){
+				name = name.substring(45);
+			}
+				
+			console.log(date);
+			
+			var out = '<div class="multiborder">'+
+			'<img id="proPic" src="https://graph.facebook.com/'+jsonEvents[key].id+'/picture?type=large">'+
+			'<div id="event1" ><a href=https://www.facebook.com/events/'+jsonEvents[key].id+'><b>'+name.toLowerCase()+'</b></a></div>'+
+			'<div id="info" >'+jsonEvents[key].location+'</div>'+
+			'<div id="info" >Going:'+jsonEvents[key].likes+'</div>'+
+			'<div id="sideTxt"><img class="icon" src="location.png">'+jsonEvents[key].location+'</div>';
+											
+        	$('#content').append(out);
+			$('#content').append('<br>');
+		}
+	}
+	
+	function buildRanking(jsonEvents){
+		
+		var count=0;
+		
+		Object.keys(jsonEvents).forEach(function(key){
+			
+			var url = 'https://graph.facebook.com/'+jsonEvents[key].id+'/attending?'+accessToken;
+			
+			$.ajax({
+   			url: url,
+   			dataType: 'json',
+   			success: function(data) {
+					 	likes = data.data.length;
+						
+						//add number of likes to the Json object representing events
+						jsonEvents[key].NewItem='likes';
+						jsonEvents[key].likes=likes;
+			
+						count = count+1;
+						
+						//Perform sort on number of likes once they are all added to the json
+						if(count==jsonEvents.length){
+								jsonEvents = removeDuplicates(jsonEvents);
+								jsonEvents.sort(function(a, b){
+    												return b.likes - a.likes;
+												});
+								addResults(jsonEvents);
+								$('#loading').empty();
+						}
+					  }  //close success function
+    		});  //close ajax to retrieve likes
+			
+		});  //close loop on each event
+	}  //close buildRanking function
+	
+	//sort events alphabetically based on name
+	function sortEvents(json){
+		var imin = 0;
+		
+		for(var j=0 ; j<json.length ; j++){
+			imin = j
+			for(var i=j+1 ; i<json.length ; i++){
+				if (json[i].name < json[imin].name) {
+					imin = i;
+				}
+			}
+			if ( imin != j ) {
+				var temp = json[imin];
+				json[imin] = json[j];
+				json[j] = temp;
+			}	
+		}
+		return json;
+	} //close of sortEvents
+	
+	//return a json array containing only events with different names, taking into account ones that have more likes
+	function removeDuplicates(json){
+		newjson=[];
+		json = sortEvents(json);
+		var i=0;
+		var j=0;
+		var k=i+1;
+		var maxLikes = 0;
+		for( i; i<json.length-1 ; i++){
+			if(json[i].name.toLowerCase() != json[k].name.toLowerCase()){
+				if(json[i].likes > json[maxLikes].likes){
+					newjson[j]=json[i];
+				}else{
+					newjson[j]=json[maxLikes];
+				}
+				maxLikes=k;
+				j++;
+				k++;
+			}else{
+				if(json[i].likes > json[k].likes){ 
+					maxLikes = i; 
+				}
+				k++;
+			}
+		}
+		console.log(newjson);
+		return newjson;
+	}
 
 });
 
