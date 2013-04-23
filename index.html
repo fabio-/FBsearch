@@ -16,12 +16,8 @@
     		<input type="text" name="q" id="q"/>
            	<input type="submit" class="go"​ value="Press"/>
         </div>
-        
-        
-        
         <div id="loading"></div>
    	 </div>
-     <img  align="middle">
     
     <div id="wrapper">
    		<div id="content"> </div>
@@ -35,21 +31,20 @@ $('.go').click(function() {
 	
 	//set number of results(events) in the json object 
 	var limit = 5000;
+	var start = (new Date).getTime();
+	var diff = 0;
 	
 	//removes previous searches!
 	$('#content').empty();
+	$('#loading').empty();
+	
 	$('#loading').append( '<p>Loading Results:</p><img src="loading.gif" id="loadImage">');
 	var accessToken = getAccessToken();
 
 	//query the Facebook graph search with input parameters and valid access token
     var url = 'https://graph.facebook.com/search?q='+ $('#q').val()+'&type=event&limit='+limit+'&'+accessToken;
 
-	var jsonEvents = getJson(url);
-	
-	console.log(url);
-
-	buildRanking(jsonEvents);
-	
+	getJson(url);	
 						
 	$('#content').append('<br><br>');
 	$('.go').val("Search");
@@ -76,13 +71,18 @@ $('.go').click(function() {
 		var jsonEvents = {};
     	$.ajax({
     		url: url,
-    		async: false,
     		dataType: 'json',
     		success: function(data) {
     				jsonEvents = data.data;
+					
+					if(jsonEvents.length == 0){
+						displayZeroResult();
+					}
+					
+					
+					buildRanking(jsonEvents);
     		}
     	});
-		return jsonEvents;
 	}
 	
 	
@@ -90,6 +90,10 @@ $('.go').click(function() {
 	function addResults(jsonEvents){
 		
 		console.log(jsonEvents[0].date);
+		
+		if(jsonEvents.length <10){
+			key=jsonEvents.length;
+		}
 		
 		for(var key=0 ; key<10 ; key++){
 			var name = jsonEvents[key].name;
@@ -106,7 +110,7 @@ $('.go').click(function() {
 			'<div id="event1" ><a href=https://www.facebook.com/events/'+jsonEvents[key].id+'><b>'+name.toLowerCase()+'</b></a></div>'+
 			'<div id="info" >'+jsonEvents[key].location+'</div>'+
 			'<div id="info" >Going:'+jsonEvents[key].likes+'</div>'+
-			'<div id="sideTxt"><img class="icon" src="location.png">'+jsonEvents[key].location+'</div>';
+			'<div id="sideTxt"><img class="icon" src="location.png">'+jsonEvents[key].location+'</div></div>';
 											
         	$('#content').append(out);
 			$('#content').append('<br>');
@@ -140,7 +144,11 @@ $('.go').click(function() {
     												return b.likes - a.likes;
 												});
 								addResults(jsonEvents);
+								diff = (new Date).getTime() - start;
+								diff/=1000;
+								diff.toString().substring(3);
 								$('#loading').empty();
+								$('#loading').append("<p>"+jsonEvents.length+" events in about : "+diff+" seconds</p>");
 						}
 					  }  //close success function
     		});  //close ajax to retrieve likes
@@ -195,6 +203,14 @@ $('.go').click(function() {
 		}
 		console.log(newjson);
 		return newjson;
+	}
+	
+	function displayZeroResult(){
+		diff = (new Date).getTime() - start;
+		diff/=1000;
+		diff.toString().substring(3);
+		$('#loading').empty();
+		$('#loading').append("<p>Zero events found in about : "+diff+" seconds</p>");
 	}
 
 });
