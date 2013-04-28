@@ -34,6 +34,7 @@ $("#q").keyup(function(event){
     }
 });
 
+
 $('.go').click(function() {
 	
 	//set number of results(events) in the json object 
@@ -97,6 +98,9 @@ $('.go').click(function() {
 	function addResults(jsonEvents){
 		
 		var events = 10;
+		var time = "Not Provided";
+		var timezone = "Not Provided";
+		var location = "Not Provided"
 		
 		if(jsonEvents.length <10){
 			events=jsonEvents.length;
@@ -104,21 +108,43 @@ $('.go').click(function() {
 		
 		for(var key=0 ; key<events ; key++){
 			var name = jsonEvents[key].name;
-			var date = jsonEvents[key].start_date;
+			var date = jsonEvents[key].start_time;
 			
 			if(name.length>45){
 				name = name.substring(45);
 			}
-				
-			console.log(date);
 			
-			var out = '<div class="multiborder">'+
-			'<img id="proPic" src="https://graph.facebook.com/'+jsonEvents[key].id+'/picture?type=large">'+
-			'<div id="event1" ><a href=https://www.facebook.com/events/'+jsonEvents[key].id+'><b>'+name.toLowerCase()+'</b></a></div>'+
-			'<div id="info" >'+jsonEvents[key].location+'</div>'+
-			'<div id="info" >Going:'+jsonEvents[key].likes+'</div>'+
-			'<div id="sideTxt"><img class="icon" src="location.png">'+jsonEvents[key].location+'</div></div>';
-											
+			var dateNTime = splitDateNTime(date);
+			
+			console.log(date);
+			console.log(dateNTime[0]);
+			var timeZone = jsonEvents[key].timezone;
+			if(dateNTime[1]!=1){
+				time = dateNTime[1];
+			}
+			if(jsonEvents[key].timezone != undefined){
+				timezone = jsonEvents[key].timezone;
+				}
+			
+			if(jsonEvents[key].location != undefined){
+				location = jsonEvents[key].location;
+				}
+				
+			var out = '<div class="multiborder"><div class="evnt"><a href=https://www.facebook.com/events/'+jsonEvents[key].id+'><b>'+name+'</b></a></div><div class= imgDiv><div id = "proPic">'+
+			'<img src="https://graph.facebook.com/'+jsonEvents[key].id+'/picture?type=large "height="110" width="159"></div></div>'+
+			'<div id="event1" ><div id="innerEvent"><div id = "iconStyle"><img class="icon" src="date.png"></div>'+
+			'<div id="startTimeStyle">'+dateNTime[0]+'</div></div>'+
+			'<div id ="innerEvent2"><div id = "iconStyle"><img class="icon" src="time.png"></div>'+
+			'<div id = "startTimeStyleBig">Starts at -> '+time+' </div></div>'+
+			'<div id = "event2"><div id = innerEvent><div id = "startTimeStyleBig"> Going-> <b>'+jsonEvents[key].likes+'</b> persons</div></div>'+
+			'<div id = "innerEvent2"><div id = "iconStyle"><img class="icon" src="timezone-icon.jpg"></div>'+
+			'<div id = "startTimeStyleBig">'+timezone+'</div></div>'+
+			//'<div id="info" >Going:'+jsonEvents[key].likes+'</div>'+
+			'<div id = "event2"><div id = "innerEvent3"><div id = "iconStyle"><img class="icon" src="location.png"></div>'+
+			'<div id = "locationStyle">'+location+'</div></div>';
+			
+			//'<div id="event2"><div id="innerEvent2"><div id = "iconeStyle"><img class="icon" src="location.png"></div><div id = "startTimeStyleBig">'+jsonEvents[key].location+'</div></div></div></div>';
+			
         	$('#content').append(out);
 			$('#content').append('<br>');
 		}
@@ -219,10 +245,86 @@ $('.go').click(function() {
 		$('#loading').empty();
 		$('#loading').append("<p>Zero events found in about : "+diff+" seconds</p>");
 	}
+	 //Takes Date and time together and split them and return them as an array
+	function splitDateNTime(timeDate){
+		
+		var actualTime;
+		var actualDate;
+		
+		var timeDateSplited = new Array();
+		try{		
+			timeDateSplited = timeDate.split("T");
+		
+			var date = timeDateSplited[0].split("-");
+			var time = timeDateSplited[1].split(":");
+		
+			if(time[0]>12){
+			
+				var t = time[0] - 12;
+				actualTime = t+":"+time[1]+" pm       ";
+			}else{
+				actualTime= time[0]+":"+time[1]+" am";
+			}
+		
+			var month = getMonthName(date[1]);
+		
+			actualDate = month+" "+date[2]+","+date[0];
+		
+			var returnArray= [actualDate,actualTime];
+		
+			return returnArray;
+		}catch(err){
+			var date = timeDateSplited[0].split("-");
+			
+			var month = getMonthName(date[1]);
+		
+			actualDate = month+" "+date[2]+","+date[0];
+			return [actualDate,1];
+			}
+	}
+	//This function fwill take a number and convert it as a Month
+	function getMonthName(monthAsNumber){
+		
+		if(monthAsNumber == 1){
+			return "Jan";
+		} else if(monthAsNumber == 2){
+			return "Feb";
+		}else if(monthAsNumber == 3){
+			return "March";
+		}else if(monthAsNumber == 4){
+			return "April";
+		}else if(monthAsNumber == 5){
+			return "May";
+		}else if(monthAsNumber == 6){
+			return "June";
+		}else if(monthAsNumber == 7){
+			return "July";
+		}else if(monthAsNumber == 8){
+			return "Aug";
+		}else if(monthAsNumber == 9){
+			return "Sep";
+		}else if(monthAsNumber == 10){
+			return "Oct";
+		}else if(monthAsNumber = 11){
+			return "Nov";
+		}else{
+			return "Dec";
+			}
+		
+	}
 
 });
-
-
+/*
+var out = '<div class="multiborder"><div class="evnt"><a href=https://www.facebook.com/events/'+jsonEvents[key].id+'><b>'+name+'</b></a></div><div class= imgDiv><div id = "proPic">'+
+			'<img src="https://graph.facebook.com/'+jsonEvents[key].id+'/picture?type=large "height="120" width="159"></div></div>'+
+			'<div id="event1" ><div id="innerEvent"><div id = "iconStyle"><img class="icon" src="date.png"></div>'+
+			'<div id="startTimeStyle">'+dateNTime[0]+'</div></div>'+
+			'<div id ="innerEvent2"><div id = "iconStyle"><img class="icon" src="time.png"></div>'+
+			'<div id = "startTimeStyle"> '+time+' </div></div>'+
+			'<div id="info" >'+jsonEvents[key].timezone+'</div>'+
+			'<div id="info" >Going:'+jsonEvents[key].likes+'</div>'+
+			'<div id="sideTxt"><img class="icon" src="location.png">'+jsonEvents[key].location+'</div></div>';
+*/
 </script>
 </body>
 </html>
