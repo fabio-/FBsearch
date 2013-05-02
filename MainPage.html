@@ -23,7 +23,6 @@
 
         function init()
         {
-			
 				 var options = { 
                     numZoomLevels: 5   };
                 map = new OpenLayers.Map("Map",options);
@@ -79,18 +78,48 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
  var xml = new JKL.ParseXML(urlRequest);
  var data = xml.parse();
  console.log(data.reversegeocode.result);
- try{
-    var name = data.reversegeocode.addressparts.city;
-    if(name == undefined){
-     alert( "Please Select Another Place Not found" );}
-     else{
-        alert( name );
+ console.log(userOption());
+ 
+ var optionForResult = userOption();
+ 
+ if(optionForResult == "City"){
+	 try{
+  	  var name = data.reversegeocode.addressparts.city;
+      if(name == undefined){
+     		alert( "Please Select Another Place Not found" );}
+      else{
+      	  alert( name );
        }
- }catch(err){}
-
+ 	 }catch(err){}
+ }else if(optionForResult == "State"){
+	 try{
+  	  var name = data.reversegeocode.addressparts.state;
+      if(name == undefined){
+     		alert( "Please Select Another Place Not found" );}
+      else{
+      	  alert( name );
+       }
+ 	 }catch(err){}
+	}
+	else if(optionForResult == "Country"){		
+		try{
+  	  var name = data.reversegeocode.addressparts.country;
+      if(name == undefined){
+     		alert( "Please Select Another Place Not found" );}
+      else{
+      	  alert( name );
+       }
+ 	 }catch(err){}
+	}		
  }
-
+ 
 });
+//This Method will return user filter option
+function userOption(){
+	 var mylist=document.getElementById("myList");
+var a =mylist.options[mylist.selectedIndex].text;
+return a;
+	 }
 </script>
 </head>
 
@@ -103,12 +132,19 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     <div id="Text" style="height:40px;
                           width:auto;
                           margin-bottom:50px;
-                          margin-top:50px;
+                          margin-top:20px;
                           text-align:center;">
-    	<h1><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To Search for events in your city Select a Place from the MAP</b></h1>
+<h1><b>To Search for events in your City or Region or State Select a Place from the MAP</b></h1>
 	
-   	 </div>
-
+    
+<p>Search for Events in a :
+          <select id="myList" onchange="userOption()">
+            <option selected>City</option>
+            <option>State</option>  
+            <option>Country</option>
+          </select>
+</p>
+<p>&nbsp; </p>
     <div id="Map" style="height: 600px ;
                          width:auto;
                         margin-top: 200px ;
