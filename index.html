@@ -4,26 +4,54 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <link rel="stylesheet" type="text/css" href="style.css">
 </head>
-<body>
-
+<body onload='init();'>
+	
 	<div style="background-color:#3b5998; width:100%;height:100px;">
     	<div id="header"><img id="logo" src="FacebookSearch.png"></div>
     </div>
     
     <div id="mainArea">
-    	<h1>To Search for events in your city enter your location in the searach bar!</h1>
+    	<h1>To Search for events in your city enter your location in the searach bar...</h1>
 	
    		<div id="searchBar">
     		<input type="text" name="q" id="q"/>
            	<input type="submit" class="go"​ value="Press"/>
         </div>
         <div id="loading"></div>
-   	</div>
-    
+		
+		<div id="mapWrapper">
+			<h1><b>...or click a point on the map!</b></h1>
+		<h1>
+		<p>Search for Events in a :
+          <select id="myList" onchange="userOption()">
+            <option selected>City</option>
+            <option>State</option>  
+            <option>Country</option>
+          </select>
+		</p></h1>
+	</div>
+	<p>&nbsp; </p>
+    <div id="Map" style="height: 400px ;
+                        width:auto;
+                        margin-top: 200px ;
+                        margin-left: 20px;
+                        flex-item-align:center;
+                        border-bottom:10px solid #AAA; 
+                        border-right:10px solid #AAA;
+                        border-top:10px solid #AAA;
+                        border-left:10px solid #AAA; 
+                        border-bottom-right-radius:10px;
+                        border-top-left-radius:10px;
+                        border-top-right-radius:10px;
+                        border-bottom-left-radius:10px;"  >
+	</div>
+</div>
+	
     <div id="SearchResultsBox"></div>
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-
+<script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+<script src="http://www.kawa.net/works/js/jkl/share/jkl-parsexml.js"></script>
 <script type="text/javascript">
 
 //Handle the "enter" event to trigger button click
@@ -33,6 +61,120 @@ $("#q").keyup(function(event){
     }
 });
 
+var map,vectorLayer,selectMarkerControl,selectedFeature;
+        var lat             =   0;
+            var lon            =    0;
+            var zoom        =   1;
+        var curpos = new Array();
+        var position;
+
+            var fromProjection = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
+            var toProjection   = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
+
+            var cntrposition       = new OpenLayers.LonLat(lon, lat).transform( fromProjection, toProjection);
+
+        function init()
+        {
+				 var options = { 
+                    numZoomLevels: 5   };
+                map = new OpenLayers.Map("Map",options);
+                var mapnik      = new OpenLayers.Layer.OSM("MAP"); 
+                var markers     = new OpenLayers.Layer.Markers( "Markers" );
+				
+
+            map.addLayers([mapnik,markers]);
+            map.addLayer(mapnik);
+            map.setCenter(cntrposition, zoom);
+
+            markers.addMarker(new OpenLayers.Marker(cntrposition));
+
+            var click = new OpenLayers.Control.Click();
+            map.addControl(click);
+
+            click.activate();
+};
+
+OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {               
+ defaultHandlerOptions: {
+  'single': true,
+  'double': false,
+  'pixelTolerance': 0,
+  'stopSingle': false,
+  'stopDouble': false
+ },
+
+ initialize: function(options) {
+  this.handlerOptions = OpenLayers.Util.extend(
+   {}, this.defaultHandlerOptions
+  );
+  OpenLayers.Control.prototype.initialize.apply(
+   this, arguments
+  );
+  this.handler = new OpenLayers.Handler.Click(
+   this, {
+    'click': this.trigger
+   }, this.handlerOptions
+  );
+ },
+
+ trigger: function(e) {
+  var lonlat = map.getLonLatFromPixel(e.xy);
+  lonlat1= new OpenLayers.LonLat(lonlat.lon,lonlat.lat).transform(toProjection,fromProjection);
+  //alert("Hello... "+lonlat1.lon + "  " +lonlat1.lat);
+  console.log("Hello... "+lonlat1.lon + "  " +lonlat1.lat);
+  var zoom = map.getZoom();
+  console.log("Hello... "+zoom);
+	var longitude = lonlat1.lon;
+ var latitude = lonlat1.lat;
+ var urlRequest = 'http://nominatim.openstreetmap.org/reverse?format=xml&lat='+latitude+'&lon='+longitude+'&zoom=10&addressdetails=1';
+ var xml = new JKL.ParseXML(urlRequest);
+ var data = xml.parse();
+ console.log(data.reversegeocode.result);
+ console.log(userOption());
+ 
+ var optionForResult = userOption();
+ 
+ if(optionForResult == "City"){
+	 try{
+  	  var name = data.reversegeocode.addressparts.city;
+      if(name == undefined){
+     		alert( "Please Select Another Place Not found" );}
+      else{
+		  $('#q').val(name);
+		  $('.go').click();
+       }
+ 	 }catch(err){}
+ }else if(optionForResult == "State"){
+	 try{
+  	  var name = data.reversegeocode.addressparts.state;
+      if(name == undefined){
+     		alert( "Please Select Another Place Not found" );}
+      else{
+		$('#q').val(name);
+      	$('.go').click();
+       }
+ 	 }catch(err){}
+	}
+	else if(optionForResult == "Country"){		
+		try{
+  	  var name = data.reversegeocode.addressparts.country;
+      if(name == undefined){
+     		alert( "Please Select Another Place Not found" );}
+      else{
+		  $('#q').val(name);
+		  $('.go').click();
+       }
+ 	 }catch(err){}
+	}		
+ }
+ 
+});
+//This Method will return user filter option
+function userOption(){
+	 var mylist=document.getElementById("myList");
+var a =mylist.options[mylist.selectedIndex].text;
+return a;
+	 }
 
 $('.go').click(function() {
 	
@@ -42,7 +184,8 @@ $('.go').click(function() {
 	var diff = 0;
 	
 	//removes previous searches!
-	
+	$('#Map').remove();
+	$('#mapWrapper').remove();
 	$('#wrapper').remove();
 	$('#loading').empty();
 	
@@ -134,7 +277,7 @@ $('.go').click(function() {
 				}
 				
 			var out = '<div class="multiborder"><div class="evnt"><a href=https://www.facebook.com/events/'+jsonEvents[key].id+'><b>'+name+'</b></a></div><div class= imgDiv><div id = "proPic">'+
-			'<img src="https://graph.facebook.com/'+jsonEvents[key].id+'/picture?type=large "height="110" width="159"></div></div>'+
+			'<img src="https://graph.facebook.com/'+jsonEvents[key].id+'/picture?type=large "height="100%" width="100%"></div></div>'+
 			'<div id="event1" ><div id="innerEvent"><div id = "iconStyle"><img class="icon" src="date.png"></div>'+
 			'<div id="startTimeStyle">'+dateNTime[0]+'</div></div>'+
 			'<div id ="innerEvent2"><div id = "iconStyle"><img class="icon" src="timezone-icon.png"></div>'+
@@ -328,5 +471,7 @@ var out = '<div class="multiborder"><div class="evnt"><a href=https://www.facebo
 			'<div id="sideTxt"><img class="icon" src="location.png">'+jsonEvents[key].location+'</div></div>';
 */
 </script>
+
+
 </body>
 </html>
