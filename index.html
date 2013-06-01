@@ -16,6 +16,7 @@
    		<div id="searchBar">
     		<input type="text" name="q" id="q"/>
            	<input type="submit" class="go"​ value="Press"/>
+            <input type="submit" id="reccomend" value="Reccomend"/>
         </div>
         <div id="loading"></div>
 		
@@ -23,7 +24,7 @@
 			<h1><b>...or click a point on the map!</b></h1>
 		<h1>
 		<p>Search for Events in a :
-          <select id="myList" onchange="userOption()">
+          <select id="myList" onChange="userOption()">
             <option selected>City</option>
             <option>State</option>  
             <option>Country</option>
@@ -61,10 +62,14 @@ $("#q").keyup(function(event){
     }
 });
 
+$('#reccomend').click(function() {
+	alert(window.name);
+});
+
 var map,vectorLayer,selectMarkerControl,selectedFeature;
-        var lat             =   0;
-            var lon            =    0;
-            var zoom        =   1;
+        var lat = 0;
+            var lon = 0;
+            var zoom = 1;
         var curpos = new Array();
         var position;
 
@@ -287,7 +292,15 @@ $('.go').click(function() {
 			'<div id = "startTimeStyleBig">'+timezone+'</div></div>'+
 			//'<div id="info" >Going:'+jsonEvents[key].likes+'</div>'+
 			'<div id = "event2"><div id = "innerEvent3"><div id = "iconStyle"><img class="icon" src="location.png"></div>'+
-			'<div id = "locationStyle">'+location+'</div></div>';
+			'<div id = "locationStyle">'+location+'</div></div>'+
+			'<div style="height:16px; overflow:hidden" id=ratingSystem>'+
+			'<img src="star.gif" class="star"  onclick="getRating('+jsonEvents[key].id+',1)">'+
+			'<img src="star.gif" class="star"  onclick="getRating('+jsonEvents[key].id+',2)">'+
+			'<img src="star.gif" class="star"  onclick="getRating('+jsonEvents[key].id+',3)">'+
+			'<img src="star.gif" class="star"  onclick="getRating('+jsonEvents[key].id+',4)">'+
+			'<img src="star.gif" class="star"  onclick="getRating('+jsonEvents[key].id+',5)">'+
+			'</div>'
+			;
 			
 			//'<div id="event2"><div id="innerEvent2"><div id = "iconeStyle"><img class="icon" src="location.png"></div><div id = "startTimeStyleBig">'+jsonEvents[key].location+'</div></div></div></div>';
 			
@@ -459,6 +472,12 @@ $('.go').click(function() {
 	}
 
 });
+
+function getRating(a,b) {
+	window.name += "id:"+a+"-score:"+b+"\n";
+	alert("Your rated event "+a+" with a score : "+b);
+	}
+
 /*
 var out = '<div class="multiborder"><div class="evnt"><a href=https://www.facebook.com/events/'+jsonEvents[key].id+'><b>'+name+'</b></a></div><div class= imgDiv><div id = "proPic">'+
 			'<img src="https://graph.facebook.com/'+jsonEvents[key].id+'/picture?type=large "height="120" width="159"></div></div>'+
