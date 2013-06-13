@@ -1,0 +1,528 @@
+<html>
+<head>
+<title>Facebook Search</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body onload='init();'>
+	
+	<div style="background-color:#3b5998; width:100%;height:100px;">
+    	<div id="header"><img id="logo" src="FacebookSearch.png"></div>
+    </div>
+    
+    <div id="mainArea">
+    	<h1>To Search for events in your city enter your location in the searach bar...</h1>
+	
+   		<div id="searchBar">
+    		<input type="text" name="q" id="q"/>
+           	<input type="submit" class="go"​ value="Press"/>
+           
+            <input type="submit" class="export" value="Export" onClick="location.href='http://localhost/CSVExport.php'"/>
+            <input type="submit" id="reccomend" value="Reccomend" onClick="location.href='http://localhost/GetRecommendationPhp.php'"/>
+        </div>
+        <div id="loading"></div>
+		
+		<div id="mapWrapper">
+			<h1><b>...or click a point on the map!</b></h1>
+		<h1>
+		<p>Search for Events in a :
+          <select id="myList" onChange="userOption()">
+            <option selected>City</option>
+            <option>State</option>  
+            <option>Country</option>
+          </select>
+		</p></h1>
+	</div>
+	<p>&nbsp; </p>
+    <div id="Map" style="height: 400px ;
+                        width:auto;
+                        margin-top: 200px ;
+                        margin-left: 20px;
+                        flex-item-align:center;
+                        border-bottom:10px solid #AAA; 
+                        border-right:10px solid #AAA;
+                        border-top:10px solid #AAA;
+                        border-left:10px solid #AAA; 
+                        border-bottom-right-radius:10px;
+                        border-top-left-radius:10px;
+                        border-top-right-radius:10px;
+                        border-bottom-left-radius:10px;"  >
+	</div>
+</div>
+	
+    <div id="SearchResultsBox"></div>
+    
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+<script src="http://www.kawa.net/works/js/jkl/share/jkl-parsexml.js"></script>
+
+<script type="text/javascript">
+
+var id="";
+//Handle the "enter" event to trigger button click
+$("#q").keyup(function(event){
+    if(event.keyCode == 13){
+        $('.go').click();
+    }
+});
+
+var map,vectorLayer,selectMarkerControl,selectedFeature;
+        var lat = 0;
+            var lon = 0;
+            var zoom = 1;
+        var curpos = new Array();
+        var position;
+
+            var fromProjection = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
+            var toProjection   = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
+
+            var cntrposition       = new OpenLayers.LonLat(lon, lat).transform( fromProjection, toProjection);
+
+        function init()
+        {
+				 var options = { 
+                    numZoomLevels: 5   };
+                map = new OpenLayers.Map("Map",options);
+                var mapnik      = new OpenLayers.Layer.OSM("MAP"); 
+                var markers     = new OpenLayers.Layer.Markers( "Markers" );
+				
+
+            map.addLayers([mapnik,markers]);
+            map.addLayer(mapnik);
+            map.setCenter(cntrposition, zoom);
+
+            markers.addMarker(new OpenLayers.Marker(cntrposition));
+
+            var click = new OpenLayers.Control.Click();
+            map.addControl(click);
+
+            click.activate();
+};
+
+OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {               
+ defaultHandlerOptions: {
+  'single': true,
+  'double': false,
+  'pixelTolerance': 0,
+  'stopSingle': false,
+  'stopDouble': false
+ },
+
+ initialize: function(options) {
+  this.handlerOptions = OpenLayers.Util.extend(
+   {}, this.defaultHandlerOptions
+  );
+  OpenLayers.Control.prototype.initialize.apply(
+   this, arguments
+  );
+  this.handler = new OpenLayers.Handler.Click(
+   this, {
+    'click': this.trigger
+   }, this.handlerOptions
+  );
+ },
+
+ trigger: function(e) {
+  var lonlat = map.getLonLatFromPixel(e.xy);
+  lonlat1= new OpenLayers.LonLat(lonlat.lon,lonlat.lat).transform(toProjection,fromProjection);
+  //alert("Hello... "+lonlat1.lon + "  " +lonlat1.lat);
+  console.log("Hello... "+lonlat1.lon + "  " +lonlat1.lat);
+  var zoom = map.getZoom();
+  console.log("Hello... "+zoom);
+	var longitude = lonlat1.lon;
+ var latitude = lonlat1.lat;
+ var urlRequest = 'http://nominatim.openstreetmap.org/reverse?format=xml&lat='+latitude+'&lon='+longitude+'&zoom=10&addressdetails=1';
+ var xml = new JKL.ParseXML(urlRequest);
+ var data = xml.parse();
+ console.log(data.reversegeocode.result);
+ console.log(userOption());
+ 
+ var optionForResult = userOption();
+ 
+ if(optionForResult == "City"){
+	 try{
+  	  var name = data.reversegeocode.addressparts.city;
+      if(name == undefined){
+     		alert( "Please Select Another Place Not found" );}
+      else{
+		  $('#q').val(name);
+		  $('.go').click();
+       }
+ 	 }catch(err){}
+ }else if(optionForResult == "State"){
+	 try{
+  	  var name = data.reversegeocode.addressparts.state;
+      if(name == undefined){
+     		alert( "Please Select Another Place Not found" );}
+      else{
+		$('#q').val(name);
+      	$('.go').click();
+       }
+ 	 }catch(err){}
+	}
+	else if(optionForResult == "Country"){		
+		try{
+  	  var name = data.reversegeocode.addressparts.country;
+      if(name == undefined){
+     		alert( "Please Select Another Place Not found" );}
+      else{
+		  $('#q').val(name);
+		  $('.go').click();
+       }
+ 	 }catch(err){}
+	}		
+ }
+ 
+});
+//This Method will return user filter option
+function userOption(){
+	 var mylist=document.getElementById("myList");
+var a =mylist.options[mylist.selectedIndex].text;
+return a;
+	 }
+
+$('.go').click(function() {
+	
+	//set number of results(events) in the json object 
+	var limit = 5000;
+	var start = (new Date).getTime();
+	var diff = 0;
+	
+	//removes previous searches!
+	$('#Map').remove();
+	$('#mapWrapper').remove();
+	$('#wrapper').remove();
+	$('#loading').empty();
+	
+	$('#loading').append( '<p style="color:black;">Loading Results:</p><img src="loading.gif" id="loadImage">');
+	var accessToken = getAccessToken();
+
+	//query the Facebook graph search with input parameters and valid access token
+    var url = 'https://graph.facebook.com/search?q='+ $('#q').val()+'&type=event&limit='+limit+'&'+accessToken;
+
+	getJson(url);	
+						
+	$('#content').append('<br><br>');
+	$('.go').val("Search");
+	
+	
+	function getAccessToken(){
+		var requestURL = 'https://graph.facebook.com/oauth/access_token?%20client_id=136237449885255&client_secret=9f9191c07c175024dbc495c7914625c0&%20grant_type=client_credentials';
+	
+		var accessToken = $.ajax({
+  		url: requestURL,
+  		global: false,
+  		type: "POST",
+  		data: "name=value",
+  		dataType: "html",
+  		async:false,
+  		success: function(msg){ }
+		} ).responseText;
+		
+		return accessToken;
+	}
+	
+	//retrieves and stores events in a json object
+	function getJson(url){
+		var jsonEvents = {};
+    	$.ajax({
+    		url: url,
+    		dataType: 'json',
+    		success: function(data) {
+    				jsonEvents = data.data;
+					
+					if(jsonEvents.length == 0){
+						displayZeroResult();
+					}
+					
+					
+					buildRanking(jsonEvents);
+    		}
+    	});
+	}
+	
+	
+	//Create the HTML to display every single event
+	function addResults(jsonEvents){
+		
+		//create box to show results
+		$('#SearchResultsBox').append('<div id="wrapper"><div id="content"> </div></div>');
+		
+		var events = 10;
+		var time = "Not Provided";
+		var timezone = "Not Provided";
+		var location = "Not Provided"
+		
+		if(jsonEvents.length <10){
+			events=jsonEvents.length;
+		}
+		
+		for(var key=0 ; key<events ; key++){
+			var name = jsonEvents[key].name;
+			var date = jsonEvents[key].start_time;
+			
+			if(name.length>58){
+				name = name.substring(0,58).concat("...");
+			}
+			
+			var dateNTime = splitDateNTime(date);
+			
+			console.log(date);
+			console.log(dateNTime[0]);
+			var timeZone = jsonEvents[key].timezone;
+			if(dateNTime[1]!=1){
+				time = dateNTime[1];
+			}
+			if(jsonEvents[key].timezone != undefined){
+				timezone = jsonEvents[key].timezone;
+				}
+			
+			if(jsonEvents[key].location != undefined){
+				location = jsonEvents[key].location;
+				}
+				
+			var out = '<div class="multiborder"><div class="evnt"><a href=https://www.facebook.com/events/'+jsonEvents[key].id+'><b>'+name+'</b></a></div><div class= imgDiv><div id = "proPic">'+
+			'<img src="https://graph.facebook.com/'+jsonEvents[key].id+'/picture?type=large "height="100%" width="100%"></div></div>'+
+			'<div id="event1" ><div id="innerEvent"><div id = "iconStyle"><img class="icon" src="date.png"></div>'+
+			'<div id="startTimeStyle">'+dateNTime[0]+'</div></div>'+
+			'<div id ="innerEvent2"><div id = "iconStyle"><img class="icon" src="timezone-icon.png"></div>'+
+			'<div id = "startTimeStyleBig">Starts at -> '+time+' </div></div>'+
+			'<div id = "event2"><div id = innerEvent><div id = "startTimeStyleBig"> Going-> <b>'+jsonEvents[key].likes+'</b> persons</div></div>'+
+			'<div id = "innerEvent2"><div id = "iconStyle"><img class="icon" src="timezone-icon.png"></div>'+
+			'<div id = "startTimeStyleBig">'+timezone+'</div></div>'+
+			//'<div id="info" >Going:'+jsonEvents[key].likes+'</div>'+
+			'<div id = "event2"><div id = "innerEvent3"><div id = "iconStyle"><img class="icon" src="location.png"></div>'+
+			'<div id = "locationStyle">'+location+'</div></div>'+
+			'<div style="height:16px; overflow:hidden" id=ratingSystem>'+
+			'<img src="star.gif" class="star"  onclick="getRating('+jsonEvents[key].id+',1)">'+
+			'<img src="star.gif" class="star"  onclick="getRating('+jsonEvents[key].id+',2)">'+
+			'<img src="star.gif" class="star"  onclick="getRating('+jsonEvents[key].id+',3)">'+
+			'<img src="star.gif" class="star"  onclick="getRating('+jsonEvents[key].id+',4)">'+
+			'<img src="star.gif" class="star"  onclick="getRating('+jsonEvents[key].id+',5)">'+
+			'</div>'
+			;
+			
+			//'<div id="event2"><div id="innerEvent2"><div id = "iconeStyle"><img class="icon" src="location.png"></div><div id = "startTimeStyleBig">'+jsonEvents[key].location+'</div></div></div></div>';
+			
+        	$('#content').append(out);
+			$('#content').append('<br>');
+		}
+	}
+	
+	function buildRanking(jsonEvents){
+		
+		var count=0;
+		
+		Object.keys(jsonEvents).forEach(function(key){
+			
+			var url = 'https://graph.facebook.com/'+jsonEvents[key].id+'/attending?'+accessToken;
+			
+			$.ajax({
+   			url: url,
+   			dataType: 'json',
+   			success: function(data) {
+					 	likes = data.data.length;
+						
+						//add number of likes to the Json object representing events
+						jsonEvents[key].NewItem='likes';
+						jsonEvents[key].likes=likes;
+			
+						count = count+1;
+						
+						//Perform sort on number of likes once they are all added to the json
+						if(count==jsonEvents.length){
+								jsonEvents = removeDuplicates(jsonEvents);
+								jsonEvents.sort(function(a, b){
+    												return b.likes - a.likes;
+												});
+								addResults(jsonEvents);
+								diff = (new Date).getTime() - start;
+								diff/=1000;
+								$('#loading').empty();
+								$('#loading').append("<p>"+jsonEvents.length+" events in about : "+diff+" seconds</p>");
+						}
+					  }  //close success function
+    		});  //close ajax to retrieve likes
+			
+		});  //close loop on each event
+	}  //close buildRanking function
+	
+	//sort events alphabetically based on name
+	function sortEvents(json){
+		var imin = 0;
+		
+		for(var j=0 ; j<json.length ; j++){
+			imin = j
+			for(var i=j+1 ; i<json.length ; i++){
+				if (json[i].name < json[imin].name) {
+					imin = i;
+				}
+			}
+			if ( imin != j ) {
+				var temp = json[imin];
+				json[imin] = json[j];
+				json[j] = temp;
+			}	
+		}
+		return json;
+	} //close of sortEvents
+	
+	//return a json array containing only events with different names, taking into account ones that have more likes
+	function removeDuplicates(json){
+		newjson=[];
+		json = sortEvents(json);
+		var i=0;
+		var j=0;
+		var k=i+1;
+		var maxLikes = 0;
+		for( i; i<json.length-1 ; i++){
+			if(json[i].name.toLowerCase() != json[k].name.toLowerCase()){
+				if(json[i].likes > json[maxLikes].likes){
+					newjson[j]=json[i];
+				}else{
+					newjson[j]=json[maxLikes];
+				}
+				maxLikes=k;
+				j++;
+				k++;
+			}else{
+				if(json[i].likes > json[k].likes){ 
+					maxLikes = i; 
+				}
+				k++;
+			}
+		}
+		console.log(newjson);
+		return newjson;
+	}
+	
+	function displayZeroResult(){
+		diff = (new Date).getTime() - start;
+		diff/=1000;
+		diff.toString().substring(3);
+		$('#loading').empty();
+		$('#loading').append("<p>Zero events found in about : "+diff+" seconds</p>");
+	}
+	 //Takes Date and time together and split them and return them as an array
+	function splitDateNTime(timeDate){
+		
+		var actualTime;
+		var actualDate;
+		
+		var timeDateSplited = new Array();
+		try{		
+			timeDateSplited = timeDate.split("T");
+		
+			var date = timeDateSplited[0].split("-");
+			var time = timeDateSplited[1].split(":");
+		
+			if(time[0]>12){
+			
+				var t = time[0] - 12;
+				actualTime = t+":"+time[1]+" pm       ";
+			}else{
+				actualTime= time[0]+":"+time[1]+" am";
+			}
+		
+			var month = getMonthName(date[1]);
+		
+			actualDate = month+" "+date[2]+","+date[0];
+		
+			var returnArray= [actualDate,actualTime];
+		
+			return returnArray;
+		}catch(err){
+			var date = timeDateSplited[0].split("-");
+			
+			var month = getMonthName(date[1]);
+		
+			actualDate = month+" "+date[2]+","+date[0];
+			return [actualDate,1];
+			}
+	}
+	//This function fwill take a number and convert it as a Month
+	function getMonthName(monthAsNumber){
+		
+		if(monthAsNumber == 1){
+			return "Jan";
+		} else if(monthAsNumber == 2){
+			return "Feb";
+		}else if(monthAsNumber == 3){
+			return "March";
+		}else if(monthAsNumber == 4){
+			return "April";
+		}else if(monthAsNumber == 5){
+			return "May";
+		}else if(monthAsNumber == 6){
+			return "June";
+		}else if(monthAsNumber == 7){
+			return "July";
+		}else if(monthAsNumber == 8){
+			return "Aug";
+		}else if(monthAsNumber == 9){
+			return "Sep";
+		}else if(monthAsNumber == 10){
+			return "Oct";
+		}else if(monthAsNumber = 11){
+			return "Nov";
+		}else{
+			return "Dec";
+			}
+		
+	}
+
+});
+
+function getRating(a,b) {
+	var a1 = a.toString();
+	var event1 = a1.substring(0,7);
+	var event2 = a1.substring(7,15);
+	
+	//Ajax call to create a different user if the "window.name" is empty. (Counts line in db and set new user = +1)
+	if(id==""){
+		var ajaxRequest = new XMLHttpRequest();
+		ajaxRequest.onreadystatechange = function(){
+			if(ajaxRequest.readyState == 4){
+				id = ajaxRequest.responseText;
+				id = id+1;
+				
+				var ajaxUpdatefirst = new XMLHttpRequest();
+				ajaxUpdatefirst.onreadystatechange = function(){
+					if(ajaxUpdatefirst.readyState == 4){
+						alert("Succesfully inserted:\nuserid: "+id+"\nidevent: "+a+"\nranking : "+b);
+					}
+				}
+				//Send the request to update rankings
+				var query = "user="+id+"&event1="+event1+"&event2="+event2+"&ranking="+b;
+				ajaxUpdatefirst.open("GET","http://localhost/updateDb.php?"+query,true);
+				ajaxUpdatefirst.send(null);
+				
+				
+			}
+		}
+	//Send the request for new user
+	ajaxRequest.open("GET", "http://localhost/GetNextId.php", true);
+	ajaxRequest.send(null); 
+	}else{
+	
+		//Request to update the database with new rankings
+		var ajaxUpdate = new XMLHttpRequest();
+		ajaxUpdate.onreadystatechange = function(){
+			if(ajaxUpdate.readyState == 4){
+			alert("Succesfully inserted:\nuserid: "+id+"\nidevent: "+a+"\nranking : "+b);
+			}
+		}
+		//Send the request to update rankings
+		var query = "user="+id+"&event1="+event1+"&event2="+event2+"&ranking="+b;
+		ajaxUpdate.open("GET","http://localhost/updateDb.php?"+query,true);
+		ajaxUpdate.send(null);
+	}
+	window.name += a+","+b+"-";
+	}
+
+</script>
+
+</body>
+</html>
